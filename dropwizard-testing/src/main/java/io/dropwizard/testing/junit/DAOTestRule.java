@@ -99,12 +99,21 @@ public class DAOTestRule extends ExternalResource {
         }
     }
 
+    /**
+     * Creates a new builder for {@link DAOTestRule}, which allows to customize a {@link SessionFactory}
+     * by different parameters. By default uses the H2 database in the memory mode.
+     *
+     * @return a new {@link Builder}
+     */
     public static Builder newBuilder() {
         return new Builder();
     }
 
     private final SessionFactory sessionFactory;
 
+    /**
+     * Use {@link DAOTestRule#newBuilder()}
+     */
     private DAOTestRule(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
@@ -132,10 +141,22 @@ public class DAOTestRule extends ExternalResource {
         ManagedSessionContext.unbind(sessionFactory);
     }
 
+    /**
+     * Returns the current active session factory for injecting to DAOs.
+     *
+     * @return {@link SessionFactory} with an open session.
+     */
     public SessionFactory getSessionFactory() {
         return sessionFactory;
     }
 
+    /**
+     * Performs a call in a transaction
+     *
+     * @param supplier the call
+     * @param <T>      the type of the returned result
+     * @return the result of the call
+     */
     public <T> T inTransaction(Supplier<T> supplier) {
         final Session session = sessionFactory.getCurrentSession();
         final Transaction transaction = session.beginTransaction();
@@ -149,6 +170,11 @@ public class DAOTestRule extends ExternalResource {
         }
     }
 
+    /**
+     * Performs an action in a transaction
+     *
+     * @param action the action
+     */
     public void inTransaction(Runnable action) {
         inTransaction(() -> {
             action.run();
